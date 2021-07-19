@@ -1,0 +1,173 @@
+JavaScript Assíncrono
+
+
+1) Callbacks
+Sequência de funções:
+
+As funções são executadas na ordem em que elas são chamadas, não da forma que são definidas, como no exemplo abaixo!
+
+function teste1() {
+  console.log("Hello, World!");
+}
+
+function teste2() {
+  console.log("Goodbye, World!");
+}
+
+teste2();
+teste1(); //vai printar goodbye antes de hello
+
+
+Algumas vezes, pode-se desejar ter controle melhor de quando se executar uma função. No caso do W3Schools, pode-se primeiro fazer um cálculo, para depois exibir ele:
+
+function exibeConta(valor) {
+  var valor = valor;
+  alert(valor);
+}
+
+
+function fazCalculo(valor1, valor2){
+  var valor1 = valor1;
+  var valor2 = valor2;
+  var res = valor1 ** valor;
+  return res
+}
+
+let resut = fazCalculo(2, 10);
+exibeConta(resut);
+
+Neste caso, armazena-se o retorno da função de cálculo em uma variável e exibe esta pela função de exibe conta
+
+Outra forma é fazer com que a função de cálculo chame a função de exibição:
+
+function calcula(valor1, valor2) {
+  var v1 = valor1;
+  var v2 = valor2;
+  res = v1 ** v2;
+  exibeConta(res);
+}
+
+O resultado é o mesmo, mas a forma de resolver foi diferente
+
+A desvantagem da primeira abordagem é que, para exibir o resultado, usa-se duas funções diferentes.
+Já no caso da segunda, o resultado SEMPRE será exibido. Para uma manipulação melhor, usa-se as callbacks.
+
+Callbacks nada mais são do que funções passadas como parâmetros para outras funções
+
+No caso do exemplo acima, pode-se passar a função de exibição para a função de cálculo:
+
+function calcula(valor1, valor2, umaCallback) {
+  var v1 = valor1;
+  var v2 = valor2;
+  let resut = v1 ** v2;
+  umaCallback(resut); //nota-se que, como parâmentro, a função NÃO tem "()", mas dentro da função sim!
+}
+
+calcula(2, 10, exibeConta); //de novo, como parâmetro = sem parênteses!
+
+
+Os exemplos acima foram bem toscos (mas didáticos para o funcionamento das callbacks), mas as callbacks se destacam quando uma função deve esperar por outra
+
+
+2) JS Assíncrono (Async JS)
+
+O W3Schools começa retomando callbacks, sendo assim, vai ser continuado a partir daí
+
+Um exemplo mais comum de callbacks usadas em Async JS é o setTimeout(), em que uma função pode ser executada depois de um contador estourar.
+
+function teste() {
+  console.log("Hello, World!");
+}
+
+setTimeout(teste, 5000); //executa função depois de 5 segundos (a budega tá em ms)
+
+Ao invés de passar o nome de uma função, pode-se passar a função toda também:
+
+//função teste de novo
+
+setTimeout( function() { teste();}, 5000);
+
+No exemplo acima o "function() {teste();}" é passado como callback. A função completa é passada no setTimeout como argumento;
+
+
+Outra situação possível é executar uma função várias vezes em intervalos definidos
+
+function dataHoraAtual() {
+  var dataAtual = new Date();
+  console.log(dataAtual.getDate() + "/" + dataAtual.getMonth() + "/" + dataAtual.getFullYear() + " " + dataAtual.getHours() + ":" + dataAtual.getMinutes() + ":" + dataAtual.getSeconds())
+}
+
+setInterval(function() {dataHoraAtual();}, 1000); executa a função a cada segundo
+
+
+Outro exemplo bem comum é quando se precisa de um arquivo de uma fonte externa. Não é possível usar todo o conteúdo do mesmo enquanto ele não estiver carregado.
+Este é um ótimo exemplo de uso para callbacks (ex: APIs)
+
+function exibe(conteudo) {
+  var conteudo = conteudo;
+  console.log(conteudo);
+}
+
+function pegaArquivo(umaCallback) {
+  let req = new XMLHttpRequest();
+  req.open('GET', "pagina.html");
+  req.onload = function() {
+    if (req.status == 200) {
+      umaCallback(this.responseText);
+    }
+    else {
+      umaCallback("Erro: " + req.status);
+    }
+  }
+  req.send();
+}
+
+pegaArquivo(exibe);
+
+
+3) Promessas (Promises)
+
+A premissa básica das promessas é de um código que produz um resultado e outro que consome o resultado.
+O produtor é algo que pode levar tempo para ser executado. O consumidor é o código que deve esperar pelo resultado do produtor.
+Uma promessa é um objeto JS que liga os códigos produtor e consumidor. Ela tem tanto o código produtor quanto chamadas para o consumidor
+
+let promessa = new Promise(function(umResolve, rejeicao)) {
+  //código produtor
+  umaResolve();
+  rejeicao();
+});
+
+promessa.then(
+function(valor) {...},
+function(erro) {...}
+);
+
+Quando o código executado obtem um resultado, uma das callbacks (umResolve ou rejeicao) será chamada
+
+Propriedades de uma Promise:
+
+Uma promessa em JS pode estar:
+pendente (pending)
+executado (fulfilled)
+rejeitado (rejected)
+
+Uma promise suporta duas propriedades: estado (state) e resultado (result)
+
+Quando uma promise está pendente (working), o resultado é indefinido
+Quando uma promise foi executada (fulfilled), terá um resultando de retorno
+Quando uma promise for rejeitada (rejected), retorna um objeto de erro
+
+Não é possível acessar as propriedades estado e result de uma promise. Para tal, usa-se um método para tratar elas.
+
+
+Como usar uma promise:
+
+Elas utilizam dois argumentos, uma callback para sucesso, outro para falha.
+Usar as duas é opcional, ou seja, pode usar uma ou outra.
+
+umaPromessa.then(
+function(valor) { ...}
+function(erro) { ...}
+);
+
+Segue um exemplo do rolê no arquivo promiseExample.js
